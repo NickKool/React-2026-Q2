@@ -1,0 +1,27 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Chakra Petch', ui-sans-serif, system-ui, sans-serif;
+
+  --color-app-bg: var(--color-slate-950);
+
+  --color-main-text: var(--color-slate-50);
+  --color-sub-text: var(--color-slate-400);
+
+  --color-search-bg: var(--color-slate-800);
+
+  --color-btn-bg: var(--color-red-600);
+  --color-btn-hover: var(--color-red-500);
+
+  --color-input-bg: var(--color-slate-950);
+  --color-input-border: var(--color-slate-800);
+  --color-input-focus: var(--color-yellow-400);
+  --color-input-text: var(--color-slate-200);
+  --color-input-placeholder: var(--color-slate-500);
+}
+
+@layer base {
+  body {
+    @apply bg-app-bg text-main-text font-sans;
+  }
+}
