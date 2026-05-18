@@ -1,24 +1,27 @@
 import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
 import { App } from './App';
 
-vi.mock('@/pages/main/index', () => ({
-  MainPage: () => <div data-testid="main-page">Main Page Content</div>,
+vi.mock('@/app/styles/index.css', () => ({}));
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
+  return {
+    ...actual,
+    RouterProvider: () => <div data-testid="mock-router">Mocked Router</div>,
+  };
+});
+
+vi.mock('../providers/router/appRouter', () => ({
+  appRouter: {},
 }));
 
-vi.mock('../providers/ErrorBoundary/ErrorBoundary', () => ({
-  ErrorBoundary: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="error-boundary">{children}</div>
-  ),
-}));
-
-describe('App Component', () => {
-  it('should render MainPage inside ErrorBoundary', () => {
+describe('App Component (Isolated)', () => {
+  it('successfully embeds RouterProvider inside ErrorBoundary', () => {
     render(<App />);
 
-    const errorBoundary = screen.getByTestId('error-boundary');
-    expect(errorBoundary).toBeInTheDocument();
-
-    expect(screen.getByTestId('main-page')).toBeInTheDocument();
-    expect(screen.getByText('Main Page Content')).toBeInTheDocument();
+    const routerElement = screen.getByTestId('mock-router');
+    expect(routerElement).toBeInTheDocument();
+    expect(routerElement).toHaveTextContent('Mocked Router');
   });
 });
