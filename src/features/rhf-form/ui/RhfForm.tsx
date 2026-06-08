@@ -1,9 +1,8 @@
 import React from 'react';
-import { useForm, Controller,useWatch } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createFormSchema, type FormInputValues } from '../../../shared/lib/validation';
+import { createFormSchema, convertToBase64, type FormInputValues } from '@/shared/lib';
 import { useSubmissionStore } from '@/entities/submission/model/store';
-import { convertToBase64 } from '@/shared/lib/file';
 import { PasswordInput } from '@/shared/ui/password-input/PasswordInput';
 import { Combobox } from '@/shared/ui/combobox/Combobox';
 
@@ -35,11 +34,6 @@ export const RhfForm: React.FC<RhfFormProps> = ({ onSuccess }) => {
     },
   });
 
-const passwordValue = useWatch({
-  control,
-  name: 'password',
-  defaultValue: '',
-});
 
 const onSubmit = async (data: FormInputValues) => {
   try {
@@ -130,21 +124,20 @@ const onSubmit = async (data: FormInputValues) => {
         )}
       />
 
-      <PasswordInput
-        id="rhf-password"
-        label="Password"
-        {...register('password')}
-        value={passwordValue}
-        error={errors.password?.message}
-        showStrength={true}
-      />
+  <PasswordInput
+  id="rhf-password"
+  label="Password"
+  {...register('password')}
+  error={errors.password?.message}
+  showStrength={true}
+/>
 
-      <PasswordInput
-        id="rhf-confirmPassword"
-        label="Confirm Password"
-        {...register('confirmPassword')}
-        error={errors.confirmPassword?.message}
-      />
+<PasswordInput
+  id="rhf-confirmPassword"
+  label="Confirm Password"
+  {...register('confirmPassword')}
+  error={errors.confirmPassword?.message}
+/>
 
       <div>
         <label htmlFor="rhf-image" className="block text-sm font-medium text-gray-700 mb-1">Profile Image</label>

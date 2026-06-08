@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { createFormSchema } from '@/shared/lib/validation';
+import { createFormSchema, convertToBase64 } from '@/shared/lib';
 import { useSubmissionStore } from '@/entities/submission/model/store';
-import { convertToBase64 } from '@/shared/lib/file';
 import { PasswordInput } from '@/shared/ui/password-input/PasswordInput';
 import { Combobox } from '@/shared/ui/combobox/Combobox';
 

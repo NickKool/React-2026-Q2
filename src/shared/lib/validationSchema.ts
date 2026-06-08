@@ -17,7 +17,7 @@ export const createFormSchema = (allowedCountries: string[]) =>
     gender: z.enum(['male', 'female'], { message: 'Please select a gender' }),
     
     acceptTerms: z.boolean({ message: 'You must accept the terms and conditions' })
-  .refine(val => val === true, 'You must accept the terms and conditions'),
+      .refine(val => val === true, 'You must accept the terms and conditions'),
     
     country: z.string()
       .min(1, 'Please select a country')
@@ -34,19 +34,21 @@ export const createFormSchema = (allowedCountries: string[]) =>
         if (val instanceof File) return true;
         return false;
       }, 'Image is required')
+      .refine((val) => {
+        const file = val instanceof FileList ? val.item(0) : (val as File);
+        return file && file.size <= 2 * 1024 * 1024;
+      }, 'Maximum size is 2MB')
+      .refine((val) => {
+        const file = val instanceof FileList ? val.item(0) : (val as File);
+        return file && ['image/jpeg', 'image/png'].includes(file.type);
+      }, 'Only JPEG and PNG formats are allowed')
       .transform((val) => {
-        if (val instanceof FileList) return val[0]; 
+        if (val instanceof FileList) return val;
         return val as File;
-      })
-      .refine((file) => file && file.size <= 2 * 1024 * 1024, 'Maximum size is 2MB')
-      .refine(
-        (file) => file && ['image/jpeg', 'image/png'].includes(file.type),
-        'Only JPEG and PNG formats are allowed'
-      ),
+      }),
   }).refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords must match',
     path: ['confirmPassword'],
   });
 
 export type FormInputValues = z.input<ReturnType<typeof createFormSchema>>;
-export type FormOutputValues = z.output<ReturnType<typeof createFormSchema>>;
