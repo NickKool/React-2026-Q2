@@ -7,7 +7,6 @@ export const createFormSchema = (allowedCountries: string[]) =>
       .min(1, 'Name is required')
       .refine(val => /^[A-ZА-Я]/.test(val), 'First letter must be capitalized'),
     
-    // Передаем сообщение о неверном типе через стандартный параметр message
     age: z.number({ message: 'Age must be a number' })
       .nonnegative('Negative values are not allowed'),
     
@@ -15,10 +14,10 @@ export const createFormSchema = (allowedCountries: string[]) =>
       .min(1, 'Email is required')
       .refine(validateEmailWithoutRegex, 'Invalid email format'),
     
-    // Убираем errorMap, заменяя на message
     gender: z.enum(['male', 'female'], { message: 'Please select a gender' }),
     
-    acceptTerms: z.literal(true, { message: 'You must accept the terms and conditions' }),
+    acceptTerms: z.boolean({ message: 'You must accept the terms and conditions' })
+  .refine(val => val === true, 'You must accept the terms and conditions'),
     
     country: z.string()
       .min(1, 'Please select a country')
@@ -28,7 +27,6 @@ export const createFormSchema = (allowedCountries: string[]) =>
     
     confirmPassword: z.string().min(1, 'Please confirm your password'),
     
-    // Универсальная валидация для RHF (FileList) и неконтролируемой формы (File)
     image: z.unknown()
       .refine((val) => {
         if (!val) return false;
@@ -37,7 +35,7 @@ export const createFormSchema = (allowedCountries: string[]) =>
         return false;
       }, 'Image is required')
       .transform((val) => {
-        if (val instanceof FileList) return val[0]; // Извлекаем первый файл для проверки
+        if (val instanceof FileList) return val[0]; 
         return val as File;
       })
       .refine((file) => file && file.size <= 2 * 1024 * 1024, 'Maximum size is 2MB')
@@ -50,4 +48,5 @@ export const createFormSchema = (allowedCountries: string[]) =>
     path: ['confirmPassword'],
   });
 
-export type FormValues = z.infer<ReturnType<typeof createFormSchema>>;
+export type FormInputValues = z.input<ReturnType<typeof createFormSchema>>;
+export type FormOutputValues = z.output<ReturnType<typeof createFormSchema>>;
