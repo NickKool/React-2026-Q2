@@ -1,42 +1,37 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
-interface PokemonData {
-  id: number;
+export interface PokemonData {
+  id: number | string;
   name: string;
   description: string;
   image: string;
 }
 
 interface AppState {
-  pokemons: PokemonData[];
-  setPokemons: (pokemons: PokemonData[]) => void;
-  selectedIds: (string | number)[];
-  toggleSelectItem: (id: string | number) => void;
+  selectedItems: PokemonData[];
+  toggleSelectItem: (item: PokemonData) => void;
   clearSelection: () => void;
 }
 
 export const useAppStore = create<AppState>()(
   devtools(
     (set) => ({
-      pokemons: [],
-      setPokemons: (pokemons) => set({ pokemons }, false, 'pokemons/set'),
-
-      selectedIds: [],
-      toggleSelectItem: (id) =>
+      selectedItems: [],
+      toggleSelectItem: (item) =>
         set(
           (state) => {
-            const isAlreadySelected = state.selectedIds.includes(id);
-            const newSelectedIds = isAlreadySelected
-              ? state.selectedIds.filter((itemId) => itemId !== id)
-              : [...state.selectedIds, id];
+            const isAlreadySelected = state.selectedItems.some((i) => String(i.id) === String(item.id));
+            const newSelectedItems = isAlreadySelected
+              ? state.selectedItems.filter((i) => String(i.id) !== String(item.id))
+              : [...state.selectedItems, item];
 
-            return { selectedIds: newSelectedIds };
+            return { selectedItems: newSelectedItems };
           },
           false,
           'items/toggleSelect'
         ),
-      clearSelection: () => set({ selectedIds: [] }, false, 'items/clearSelection'),
+      clearSelection: () => set({ selectedItems: [] }, false, 'items/clearSelection'),
     }),
     { name: 'AppStore' }
   )

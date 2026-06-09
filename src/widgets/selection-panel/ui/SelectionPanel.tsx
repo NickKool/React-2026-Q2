@@ -2,21 +2,17 @@ import { useAppStore } from '@/shared/model';
 import { downloadCsv } from '@/shared/lib';
 
 export function SelectionPanel() {
-  const selectedIds = useAppStore((state) => state.selectedIds);
+  // Достаем сразу массив объектов выбранных покемонов
+  const selectedItems = useAppStore((state) => state.selectedItems);
   const clearSelection = useAppStore((state) => state.clearSelection);
-  const pokemons = useAppStore((state) => state.pokemons);
 
-  const selectedCount = selectedIds.length;
+  const selectedCount = selectedItems.length;
 
   if (selectedCount === 0) return null;
 
   const handleDownload = () => {
-    const selectedPokemons = pokemons.filter((pokemon) => {
-      return selectedIds.some(
-        (selectedId) => String(selectedId).trim() === String(pokemon.id).trim()
-      );
-    });
-    downloadCsv(selectedPokemons);
+    // Больше никакой фильтрации не нужно, просто скачиваем то, что выбрано
+    downloadCsv(selectedItems);
   };
 
   return (

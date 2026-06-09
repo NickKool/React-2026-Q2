@@ -11,14 +11,20 @@ interface PokemonCardProps {
 export function PokemonCard({ id, name, description, imageUrl }: PokemonCardProps) {
   const [searchParams] = useSearchParams();
 
-  const selectedIds = useAppStore((state) => state.selectedIds);
+  const selectedItems = useAppStore((state) => state.selectedItems);
   const toggleSelectItem = useAppStore((state) => state.toggleSelectItem);
 
-  const isSelected = selectedIds.includes(id);
+  const isSelected = selectedItems.some((item) => String(item.id) === String(id));
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
-    toggleSelectItem(id);
+    
+    toggleSelectItem({
+      id,
+      name,
+      description,
+      image: imageUrl, 
+    });
   };
 
   return (
