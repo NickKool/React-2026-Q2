@@ -2,7 +2,6 @@ import { useAppStore } from '@/shared/model';
 import { downloadCsv } from '@/shared/lib';
 
 export function SelectionPanel() {
-  // Достаем сразу массив объектов выбранных покемонов
   const selectedItems = useAppStore((state) => state.selectedItems);
   const clearSelection = useAppStore((state) => state.clearSelection);
 
@@ -11,7 +10,6 @@ export function SelectionPanel() {
   if (selectedCount === 0) return null;
 
   const handleDownload = () => {
-    // Больше никакой фильтрации не нужно, просто скачиваем то, что выбрано
     downloadCsv(selectedItems);
   };
 

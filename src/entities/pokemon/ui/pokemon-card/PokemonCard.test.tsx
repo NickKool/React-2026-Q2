@@ -5,7 +5,6 @@ import { useAppStore } from '@/shared/model';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 type OriginalSelector = Parameters<typeof useAppStore>[0];
-
 type StoreMock = <T>(selector: (state: Parameters<OriginalSelector>[0]) => T) => T;
 
 vi.mock('@/shared/model', () => ({
@@ -28,12 +27,10 @@ describe('PokemonCard', () => {
     vi.mocked(useAppStore).mockImplementation(
       <T,>(selector: (state: Parameters<OriginalSelector>[0]) => T): T =>
         selector({
-          selectedIds: [],
+          selectedItems: [],
           toggleSelectItem: mockToggleSelectItem,
-          pokemons: [],
-          setPokemons: vi.fn(),
           clearSelection: vi.fn(),
-        } as Parameters<OriginalSelector>[0])
+        } as unknown as Parameters<OriginalSelector>[0])
     );
   });
 
@@ -49,7 +46,6 @@ describe('PokemonCard', () => {
 
     const image = screen.getByAltText(mockData.name) as HTMLImageElement;
     expect(image).toBeInTheDocument();
-
     expect(image.getAttribute('src')).toBe(mockData.imageUrl);
   });
 
@@ -86,19 +82,29 @@ describe('PokemonCard', () => {
     fireEvent.click(checkbox);
 
     expect(mockToggleSelectItem).toHaveBeenCalledTimes(1);
-    expect(mockToggleSelectItem).toHaveBeenCalledWith(mockData.id);
+    expect(mockToggleSelectItem).toHaveBeenCalledWith({
+      id: mockData.id,
+      name: mockData.name,
+      description: mockData.description,
+      image: mockData.imageUrl,
+    });
   });
 
   it('should apply active border classes when item is selected', () => {
     vi.mocked(useAppStore).mockImplementation(
       <T,>(selector: (state: Parameters<OriginalSelector>[0]) => T): T =>
         selector({
-          selectedIds: [mockData.id],
+          selectedItems: [
+            {
+              id: mockData.id,
+              name: mockData.name,
+              description: mockData.description,
+              image: mockData.imageUrl,
+            },
+          ],
           toggleSelectItem: mockToggleSelectItem,
-          pokemons: [],
-          setPokemons: vi.fn(),
           clearSelection: vi.fn(),
-        } as Parameters<OriginalSelector>[0])
+        } as unknown as Parameters<OriginalSelector>[0])
     );
 
     render(

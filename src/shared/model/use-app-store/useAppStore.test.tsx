@@ -1,73 +1,57 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useAppStore } from './useAppStore';
 
-interface PokemonData {
-  id: number;
-  name: string;
-  description: string;
-  image: string;
-}
-
 describe('useAppStore', () => {
-  const mockPokemons: PokemonData[] = [
-    { id: 25, name: 'Pikachu', description: 'Mouse Pokémon', image: 'pikachu.png' },
-    { id: 1, name: 'Bulbasaur', description: 'Seed Pokémon', image: 'bulbasaur.png' },
-  ];
+  const mockPokemon = {
+    id: 25,
+    name: 'Pikachu',
+    description: 'Mouse Pokémon',
+    image: 'pikachu.png',
+  };
 
   beforeEach(() => {
     useAppStore.setState({
-      pokemons: [],
-      selectedIds: [],
+      selectedItems: [],
     });
   });
 
   it('should have correct initial state', () => {
     const state = useAppStore.getState();
-
-    expect(state.pokemons).toEqual([]);
-    expect(state.selectedIds).toEqual([]);
+    expect(state.selectedItems).toEqual([]);
   });
 
-  it('should set pokemons list via setPokemons', () => {
-    useAppStore.getState().setPokemons(mockPokemons);
-    const updatedState = useAppStore.getState();
-    expect(updatedState.pokemons).toEqual(mockPokemons);
-  });
-
-  it('should add item ID to selectedIds if it is not present via toggleSelectItem', () => {
-    const pokemonId = 25;
-
-    useAppStore.getState().toggleSelectItem(pokemonId);
+  it('should add item object to selectedItems if it is not present via toggleSelectItem', () => {
+    useAppStore.getState().toggleSelectItem(mockPokemon);
 
     const stateAfterAdd = useAppStore.getState();
-    expect(stateAfterAdd.selectedIds).toEqual([pokemonId]);
+    expect(stateAfterAdd.selectedItems).toEqual([mockPokemon]);
   });
 
-  it('should remove item ID from selectedIds if it is already present via toggleSelectItem', () => {
-    const pokemonId = 25;
+  it('should remove item object from selectedItems if it is already present via toggleSelectItem', () => {
+    useAppStore.setState({ selectedItems: [mockPokemon, { ...mockPokemon, id: 1, name: 'Bulbasaur' }] });
 
-    useAppStore.setState({ selectedIds: [pokemonId, 1] });
-
-    useAppStore.getState().toggleSelectItem(pokemonId);
+    useAppStore.getState().toggleSelectItem(mockPokemon);
 
     const stateAfterRemove = useAppStore.getState();
-    expect(stateAfterRemove.selectedIds).toEqual([1]);
+    expect(stateAfterRemove.selectedItems).toEqual([{ ...mockPokemon, id: 1, name: 'Bulbasaur' }]);
   });
 
-  it('should support both number and string types for selectedIds in toggleSelectItem', () => {
-    useAppStore.getState().toggleSelectItem(25);
-    useAppStore.getState().toggleSelectItem('custom-id-1');
+  it('should support both number and string types for id in selectedItems within toggleSelectItem', () => {
+    const stringIdPokemon = { ...mockPokemon, id: 'custom-id-1', name: 'Charmander' };
+
+    useAppStore.getState().toggleSelectItem(mockPokemon);
+    useAppStore.getState().toggleSelectItem(stringIdPokemon);
 
     const state = useAppStore.getState();
-    expect(state.selectedIds).toEqual([25, 'custom-id-1']);
+    expect(state.selectedItems).toEqual([mockPokemon, stringIdPokemon]);
   });
 
-  it('should clear all selected IDs via clearSelection', () => {
-    useAppStore.setState({ selectedIds: [25, 1, 'pokemon-id'] });
+  it('should clear all selected items via clearSelection', () => {
+    useAppStore.setState({ selectedItems: [mockPokemon, { ...mockPokemon, id: 1 }] });
 
     useAppStore.getState().clearSelection();
 
     const stateAfterClear = useAppStore.getState();
-    expect(stateAfterClear.selectedIds).toEqual([]);
+    expect(stateAfterClear.selectedItems).toEqual([]);
   });
 });

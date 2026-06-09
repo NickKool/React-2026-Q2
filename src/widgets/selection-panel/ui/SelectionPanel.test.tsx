@@ -5,7 +5,6 @@ import { downloadCsv } from '@/shared/lib';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 type AppState = Parameters<typeof useAppStore> extends (state: infer S) => unknown ? S : never;
-
 type StoreMock = <T>(selector: (state: AppState) => T) => T;
 
 vi.mock('@/shared/model', () => ({
@@ -17,10 +16,9 @@ vi.mock('@/shared/lib', () => ({
 }));
 
 describe('SelectionPanel', () => {
-  const mockPokemons = [
-    { id: 25, name: 'Pikachu' },
-    { id: '1', name: 'Bulbasaur' },
-    { id: 4, name: 'Charmander' },
+  const mockSelectedItems = [
+    { id: 25, name: 'Pikachu', description: 'Electric', image: 'pikachu.png' },
+    { id: '1', name: 'Bulbasaur', description: 'Grass', image: 'bulbasaur.png' },
   ];
 
   const mockClearSelection = vi.fn();
@@ -29,13 +27,12 @@ describe('SelectionPanel', () => {
     vi.clearAllMocks();
   });
 
-  it('should return null (render nothing) when selectedCount is 0', () => {
+  it('should return null (render nothing) when selectedItems is empty', () => {
     vi.mocked(useAppStore).mockImplementation(
       <T,>(selector: (state: AppState) => T): T =>
         selector({
-          selectedIds: [],
+          selectedItems: [],
           clearSelection: mockClearSelection,
-          pokemons: mockPokemons,
         } as unknown as AppState)
     );
 
@@ -47,9 +44,8 @@ describe('SelectionPanel', () => {
     vi.mocked(useAppStore).mockImplementation(
       <T,>(selector: (state: AppState) => T): T =>
         selector({
-          selectedIds: [25, '1'],
+          selectedItems: mockSelectedItems,
           clearSelection: mockClearSelection,
-          pokemons: mockPokemons,
         } as unknown as AppState)
     );
 
@@ -63,9 +59,8 @@ describe('SelectionPanel', () => {
     vi.mocked(useAppStore).mockImplementation(
       <T,>(selector: (state: AppState) => T): T =>
         selector({
-          selectedIds: [25],
+          selectedItems: [mockSelectedItems[0]],
           clearSelection: mockClearSelection,
-          pokemons: mockPokemons,
         } as unknown as AppState)
     );
 
@@ -77,13 +72,12 @@ describe('SelectionPanel', () => {
     expect(mockClearSelection).toHaveBeenCalledTimes(1);
   });
 
-  it('should filter selected pokemons and trigger downloadCsv when "Download" is clicked', () => {
+  it('should trigger downloadCsv with selected items when "Download" is clicked', () => {
     vi.mocked(useAppStore).mockImplementation(
       <T,>(selector: (state: AppState) => T): T =>
         selector({
-          selectedIds: [25, ' 1 '],
+          selectedItems: mockSelectedItems,
           clearSelection: mockClearSelection,
-          pokemons: mockPokemons,
         } as unknown as AppState)
     );
 
@@ -93,9 +87,6 @@ describe('SelectionPanel', () => {
     fireEvent.click(downloadButton);
 
     expect(downloadCsv).toHaveBeenCalledTimes(1);
-    expect(downloadCsv).toHaveBeenCalledWith([
-      { id: 25, name: 'Pikachu' },
-      { id: '1', name: 'Bulbasaur' },
-    ]);
+    expect(downloadCsv).toHaveBeenCalledWith(mockSelectedItems);
   });
 });
