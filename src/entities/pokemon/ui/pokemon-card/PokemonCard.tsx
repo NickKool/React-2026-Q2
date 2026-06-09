@@ -1,4 +1,5 @@
 import { Link, useSearchParams } from 'react-router-dom';
+import { useAppStore } from '@/shared/model';
 
 interface PokemonCardProps {
   id: string | number;
@@ -10,16 +11,42 @@ interface PokemonCardProps {
 export function PokemonCard({ id, name, description, imageUrl }: PokemonCardProps) {
   const [searchParams] = useSearchParams();
 
+  const selectedItems = useAppStore((state) => state.selectedItems);
+  const toggleSelectItem = useAppStore((state) => state.toggleSelectItem);
+
+  const isSelected = selectedItems.some((item) => String(item.id) === String(id));
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    
+    toggleSelectItem({
+      id,
+      name,
+      description,
+      image: imageUrl, 
+    });
+  };
+
   return (
     <Link
       to={{
         pathname: `pokemon/${id}`,
         search: searchParams.toString(),
       }}
-      className="bg-slate-800 border border-slate-700 rounded-xl p-4 flex flex-col items-center 
-                 transition-transform hover:scale-105 shadow-md cursor-pointer text-none w-full box-border"
+      className={`bg-search-bg border rounded-xl p-4 flex flex-col items-center relative
+                 transition-all hover:scale-105 shadow-md cursor-pointer text-none w-full box-border
+                 ${isSelected ? 'border-input-focus ring-2 ring-input-focus' : 'border-input-border'}`}
     >
-      <div className="w-full max-w-32 aspect-square bg-slate-900 rounded-full mb-4 flex items-center justify-center p-3">
+      <div className="absolute top-3 left-3 z-10">
+        <input
+          type="checkbox"
+          checked={isSelected}
+          onChange={handleCheckboxChange}
+          onClick={(e) => e.stopPropagation()}
+          className="w-4 h-4 cursor-pointer accent-input-focus"
+        />
+      </div>
+      <div className="w-full max-w-32 aspect-square bg-input-bg border border-input-border rounded-full mb-4 flex items-center justify-center p-3">
         <img src={imageUrl} alt={name} className="w-full h-full object-contain max-h-24" />
       </div>
 
