@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi, type Mock } from 'vitest';
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { PasswordInput } from './PasswordInput';
 import { calculatePasswordStrength } from '../../lib/passwordStrength';
 
@@ -76,37 +76,26 @@ describe('PasswordInput Component', () => {
     expect(mockOnChange).toHaveBeenCalled();
   });
 
-  it('should evaluate password strength based on the external custom value prop when controlled', () => {
-    (calculatePasswordStrength as Mock).mockReturnValue({
-      hasDigit: true,
-      hasUpper: true,
-      hasLower: true,
-      hasSpecial: true,
-      score: 4,
-    });
-
-    render(<PasswordInput {...defaultProps} showStrength={true} value="StrongPass123!" />);
-
-    expect(calculatePasswordStrength).toHaveBeenCalledWith('StrongPass123!');
-    expect(screen.getByText('Password strength:')).toBeInTheDocument();
-    expect(screen.getByText('4 / 4')).toBeInTheDocument();
-  });
-
-  it('should dynamically append the correct tailwind background color class corresponding to computed score results', () => {
-    const { rerender } = render(<PasswordInput {...defaultProps} showStrength={true} value="w" />);
+  it('should dynamically append the correct tailwind background color class corresponding to computed score results', async () => {
+    const user = userEvent.setup();
     
     (calculatePasswordStrength as Mock).mockReturnValue({ score: 1 });
-    rerender(<PasswordInput {...defaultProps} showStrength={true} value="weak" />);
+    const { unmount: unmountWeak } = render(<PasswordInput {...defaultProps} showStrength={true} />);
+    await user.type(screen.getByLabelText('Password Label'), 'w');
     let innerBar = screen.getByText(/Password strength:/i).previousElementSibling?.firstElementChild;
     expect(innerBar).toHaveClass('bg-red-500');
+    unmountWeak();
 
     (calculatePasswordStrength as Mock).mockReturnValue({ score: 3 });
-    rerender(<PasswordInput {...defaultProps} showStrength={true} value="medium1" />);
+    const { unmount: unmountMedium } = render(<PasswordInput {...defaultProps} showStrength={true} />);
+    await user.type(screen.getByLabelText('Password Label'), 'm');
     innerBar = screen.getByText(/Password strength:/i).previousElementSibling?.firstElementChild;
     expect(innerBar).toHaveClass('bg-yellow-500');
+    unmountMedium();
 
     (calculatePasswordStrength as Mock).mockReturnValue({ score: 4 });
-    rerender(<PasswordInput {...defaultProps} showStrength={true} value="strong1!" />);
+    render(<PasswordInput {...defaultProps} showStrength={true} />);
+    await user.type(screen.getByLabelText('Password Label'), 's');
     innerBar = screen.getByText(/Password strength:/i).previousElementSibling?.firstElementChild;
     expect(innerBar).toHaveClass('bg-green-500');
   });

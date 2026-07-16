@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { createFormSchema, convertToBase64 } from '@/shared/lib';
 import { useSubmissionStore } from '@/entities/submission/model/store';
 import { PasswordInput } from '@/shared/ui/password-input/PasswordInput';
@@ -11,8 +11,8 @@ interface UncontrolledFormProps {
 export const UncontrolledForm: React.FC<UncontrolledFormProps> = ({ onSuccess }) => {
   const { countries, addSubmission } = useSubmissionStore();
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  const [countryValue, setCountryValue] = useState('');
-  const [passwordValue, setPasswordValue] = useState('');
+  
+  const countryInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,8 +30,8 @@ export const UncontrolledForm: React.FC<UncontrolledFormProps> = ({ onSuccess })
       age: ageNumber,
       email: formData.get('email') as string,
       gender: formData.get('gender') as string,
-      country: countryValue, 
-      password: passwordValue, 
+      country: formData.get('country') as string, 
+      password: formData.get('password') as string, 
       confirmPassword: formData.get('confirmPassword') as string,
       acceptTerms,
       image: imageFile && imageFile.size > 0 ? imageFile : undefined,
@@ -62,12 +62,11 @@ export const UncontrolledForm: React.FC<UncontrolledFormProps> = ({ onSuccess })
         email: result.data.email,
         gender: result.data.gender as 'male' | 'female',
         country: result.data.country,
-        imageBas64: base64Image,
+        imageBas64: base64Image, 
       });
 
       target.reset();
-      setCountryValue('');
-      setPasswordValue('');
+      if (countryInputRef.current) countryInputRef.current.value = ''; 
       onSuccess(); 
     } catch (error) {
       console.error('Error processing form submission:', error);
@@ -123,21 +122,23 @@ export const UncontrolledForm: React.FC<UncontrolledFormProps> = ({ onSuccess })
         {formErrors.gender && <p className="mt-1 text-xs text-red-500">{formErrors.gender}</p>}
       </div>
 
-      <Combobox
-        id="unc-country"
-        label="Country"
-        options={countries}
-        value={countryValue}
-        onChange={setCountryValue}
-        error={formErrors.country}
-      />
+      <div>
+        <input type="hidden" name="country" ref={countryInputRef} />
+        <Combobox
+          id="unc-country"
+          label="Country"
+          options={countries}
+          onChange={(val) => {
+            if (countryInputRef.current) countryInputRef.current.value = val;
+          }}
+          error={formErrors.country}
+        />
+      </div>
 
       <PasswordInput
         id="unc-password"
         name="password"
         label="Password"
-        value={passwordValue}
-        onChange={(e) => setPasswordValue(e.target.value)}
         error={formErrors.password}
         showStrength={true}
       />

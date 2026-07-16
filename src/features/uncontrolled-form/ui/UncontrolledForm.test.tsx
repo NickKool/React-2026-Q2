@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi, type  Mock } from 'vitest';
+import { vi, type Mock } from 'vitest';
 import { UncontrolledForm } from './UncontrolledForm';
 import { useSubmissionStore } from '@/entities/submission/model/store';
 import { convertToBase64, createFormSchema } from '@/shared/lib';
@@ -21,9 +21,8 @@ interface MockComboboxProps {
   id: string;
   label: string;
   options: string[];
-  value: string;
-  onChange: (value: string) => void;
   error?: string;
+  name?: string;
 }
 
 const mockComponents = vi.hoisted(() => {
@@ -47,13 +46,13 @@ vi.mock('@/shared/lib', async (importOriginal) => {
 });
 
 vi.mock('@/shared/ui/password-input/PasswordInput', () => {
-  const MockPasswordInput = React.forwardRef<HTMLInputElement, MockPasswordInputProps>((props, ref) => {
+  const MockPasswordInput = React.forwardRef<HTMLInputElement, MockPasswordInputProps>(({ label, error, ...props }, ref) => {
     mockComponents.passwordRender(props);
     return (
       <div>
-        <label htmlFor={props.id}>{props.label}</label>
-        <input id={props.id} ref={ref} type="password" name={props.name} value={props.value} onChange={props.onChange} />
-        {props.error && <p>{props.error}</p>}
+        <label htmlFor={props.id}>{label}</label>
+        <input ref={ref} type="password" {...props} />
+        {error && <p>{error}</p>}
       </div>
     );
   });
@@ -62,13 +61,13 @@ vi.mock('@/shared/ui/password-input/PasswordInput', () => {
 });
 
 vi.mock('@/shared/ui/combobox/Combobox', () => {
-  const MockCombobox = (props: MockComboboxProps) => {
-    mockComponents.comboboxRender(props);
+  const MockCombobox = ({ id, label, options, error, name }: MockComboboxProps) => {
+    mockComponents.comboboxRender({ id, label, options, error, name });
     return (
       <div>
-        <label htmlFor={props.id}>{props.label}</label>
-        <input id={props.id} value={props.value} onChange={(e) => props.onChange(e.target.value)} />
-        {props.error && <p>{props.error}</p>}
+        <label htmlFor={id}>{label}</label>
+        <input id={id} name={name} type="text" />
+        {error && <p>{error}</p>}
       </div>
     );
   };

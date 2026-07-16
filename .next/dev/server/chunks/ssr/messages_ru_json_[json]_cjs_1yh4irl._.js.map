@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 3, "column": 0}, "map": {"version":3,"sources":["turbopack:///messages/ru.json"],"sourcesContent":["{\"Common\":{\"home\":\"Главная\",\"about\":\"О нас\",\"dark\":\"Темная\",\"light\":\"Светлая\",\"refresh cache\":\"Обновить кэш\",\"error\":\"Ошибка загрузки\",\"find\":\"Поиск\",\"Back\":\"Назад\",\"Next\":\"Вперед\",\"Page\":\"Страница\",\"of\":\"из\"},\"NotFoundPage\":{\"title\":\"Страница не найдена\",\"description\":\"Страница, которую вы ищете, не существует.\",\"goHome\":\"Вернуться на главную\"},\"AboutPage\":{\"title\":\"О нас\",\"description\":\"Привет! Меня зовут Николай. Я начинающий фронтенд-разработчик, увлеченный созданием чистых, эффективных и удобных для пользователя веб-приложений.\",\"git\":\"Мой профиль на GitHub\",\"rs\":\"Курс React от RS School\"},\"PokemonDetail\":{\"capabilities\":\"Способности\"},\"SelectionPanel\":{\"selected items\":\"Выбранные товары\",\"unselect All\":\"Снять выделенное \",\"download\":\"Скачать\"}}"],"names":[],"mappings":""}}]
+}

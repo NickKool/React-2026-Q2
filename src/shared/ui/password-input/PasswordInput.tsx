@@ -1,4 +1,4 @@
-import React, { forwardRef, useState } from 'react';
+import {forwardRef, useState } from 'react';
 import { calculatePasswordStrength } from '../../lib/passwordStrength';
 
 interface PasswordInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -8,15 +8,17 @@ interface PasswordInputProps extends React.InputHTMLAttributes<HTMLInputElement>
 }
 
 export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
-  ({ label, error, showStrength, value: customValue, onChange, ...props }, ref) => {
-    const [localValue, setLocalValue] = useState('');
-
-    const currentPassword = customValue !== undefined ? String(customValue) : localValue;
-    const strength = calculatePasswordStrength(currentPassword);
+  ({ label, error, showStrength, ...props }, ref) => {
+    const [strengthPassword, setStrengthPassword] = useState('');
+    const strength = calculatePasswordStrength(strengthPassword);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setLocalValue(e.target.value); 
-      if (onChange) onChange(e);  
+      if (showStrength) {
+        setStrengthPassword(e.target.value);
+      }
+      if (props.onChange) {
+        props.onChange(e);
+      }
     };
 
     const getBarColor = (score: number) => {
@@ -33,14 +35,13 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
         <input
           {...props}
           ref={ref}
-          value={customValue} 
-          onChange={handleInputChange} 
           type="password"
+          onChange={handleInputChange}
           className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         />
         {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
 
-        {showStrength && currentPassword.length > 0 && (
+        {showStrength && strengthPassword.length > 0 && (
           <div className="mt-2">
             <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
               <div 

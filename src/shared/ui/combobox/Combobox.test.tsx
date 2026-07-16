@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 import { Combobox } from './Combobox';
@@ -35,12 +35,13 @@ describe('Combobox Component', () => {
   });
 
   it('should open options dropdown list upon input focusing step', async () => {
+    const user = userEvent.setup();
     render(<Combobox {...defaultProps} />);
     const inputElement = screen.getByRole('textbox', { name: 'Country' });
 
     expect(screen.queryByRole('list')).not.toBeInTheDocument();
 
-    fireEvent.focus(inputElement);
+    await user.click(inputElement); 
 
     expect(screen.getByText('Belarus')).toBeInTheDocument();
     expect(screen.getByText('Germany')).toBeInTheDocument();
@@ -64,7 +65,7 @@ describe('Combobox Component', () => {
     render(<Combobox {...defaultProps} />);
     const inputElement = screen.getByRole('textbox', { name: 'Country' });
 
-    fireEvent.focus(inputElement);
+    await user.click(inputElement);
     const targetOption = screen.getByText('Germany');
     await user.click(targetOption);
 
@@ -81,7 +82,6 @@ describe('Combobox Component', () => {
       </div>
     );
     const inputElement = screen.getByRole('textbox', { name: 'Country' });
-
 
     await user.clear(inputElement);
     await user.type(inputElement, 'InvalidTxt');
