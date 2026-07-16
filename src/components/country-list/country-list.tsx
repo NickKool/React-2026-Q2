@@ -26,23 +26,38 @@ export const CountryList = ({
   sortField,
   sortOrder,
 }: CountryListProps) => {
-    const filteredCountries = useMemo(() => {
-    return countries
-      .filter((c) => {
-        const matchesSearch = c.id.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesRegion = !selectedRegion || c.data.some((d) => d.region === selectedRegion);
-        return matchesSearch && matchesRegion;
-      })
-      .sort((a, b) => {
-        if (sortField === 'name') {
-          return sortOrder === 'asc' ? a.id.localeCompare(b.id) : b.id.localeCompare(a.id);
-        } else {
-          const popA = getPopulationForYear(createYearDataMap(a.data), selectedYear) || 0;
-          const popB = getPopulationForYear(createYearDataMap(b.data), selectedYear) || 0;
-          return sortOrder === 'asc' ? popA - popB : popB - popA;
-        }
-      });
+  const filteredCountries = useMemo(() => {
+    const initialFiltered = countries.filter((c) => {
+      const matchesSearch = c.id.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesRegion = !selectedRegion || c.data.some((d) => d.region === selectedRegion);
+      return matchesSearch && matchesRegion;
+    });
+
+    const mappedCountries = initialFiltered.map((c) => {
+      const population = sortField === 'population'
+        ? (getPopulationForYear(createYearDataMap(c.data), selectedYear) || 0)
+        : 0;
+      return {
+        country: c,
+        population,
+      };
+    });
+
+    mappedCountries.sort((a, b) => {
+      if (sortField === 'name') {
+        return sortOrder === 'asc' 
+          ? a.country.id.localeCompare(b.country.id) 
+          : b.country.id.localeCompare(a.country.id);
+      } else {
+        return sortOrder === 'asc' 
+          ? a.population - b.population 
+          : b.population - a.population;
+      }
+    });
+
+    return mappedCountries.map((item) => item.country);
   }, [countries, searchQuery, selectedRegion, selectedYear, sortField, sortOrder]); 
+
   const parentRef = useRef<HTMLDivElement>(null);
 
   const rowVirtualizer = useVirtualizer({
@@ -75,7 +90,7 @@ export const CountryList = ({
         {rowVirtualizer.getVirtualItems().map((virtualRow) => {
           const country = filteredCountries[virtualRow.index];
 
-       return (
+          return (
             <div
               key={country.id}
               data-index={virtualRow.index}
