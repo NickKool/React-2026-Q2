@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 76, "column": 0}, "map": {"version":3,"sources":["file:///C:/Projects/React/React-2026-Q2/src/proxy.ts"],"sourcesContent":["import createMiddleware from 'next-intl/middleware';\r\nimport { NextRequest } from 'next/server';\r\n\r\nconst intlProxy = createMiddleware({\r\n  locales: ['en', 'ru'],\r\n  defaultLocale: 'ru',\r\n  localePrefix: 'always'\r\n});\r\n\r\nexport default function proxy(request: NextRequest) {\r\n  return intlProxy(request);\r\n}\r\n\r\nexport const config = {\r\n  matcher: ['/', '/(en|ru)/:path*', '/((?!_next|_vercel|.*\\\\..*).*)']\r\n};\r\n"],"names":["intlProxy","locales","defaultLocale","localePrefix","proxy","request","config","matcher"],"mappings":";;;;;;AAAA;;AAGA,MAAMA,YAAY,IAAA,iMAAgB,EAAC;IACjCC,SAAS;QAAC;QAAM;KAAK;IACrBC,eAAe;IACfC,cAAc;AAChB;AAEe,SAASC,MAAMC,OAAoB;IAChD,OAAOL,UAAUK;AACnB;AAEO,MAAMC,SAAS;IACpBC,SAAS;QAAC;QAAK;QAAmB;KAAiC;AACrE"}}]
-}

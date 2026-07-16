@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///C:/Projects/React/React-2026-Q2/src/app/layout.tsx"],"sourcesContent":["import './styles/index.css'; \r\n\r\nexport default function RootLayout({ children }: { children: React.ReactNode }) {\r\n  return children;\r\n}\r\n"],"names":["RootLayout","children"],"mappings":";;;;;AAEe,SAASA,WAAW,EAAEC,QAAQ,EAAiC;IAC5E,OAAOA;AACT"}}]
-}
